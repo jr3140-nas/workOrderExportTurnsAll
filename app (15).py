@@ -17,7 +17,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 CRAFT_ORDER = [
     "MS Turns", 
     "HM Mech Turns",
-    "HM Elec Turns"   
+    "HM Elec Turns",   
     "CM Turns",
     "LP RM Turns",
     "LP FM Turns",
