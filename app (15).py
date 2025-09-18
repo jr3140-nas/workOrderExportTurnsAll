@@ -1098,11 +1098,27 @@ selected_craft = st.selectbox(
     "Select Craft", options=craft_select_options, index=0
 )
 
+# Filter the main time DataFrame by the selected craft before generating
+# the report.  When a specific craft is chosen, only include rows where the
+# address book indicates that craft.  Converting AddressBookNumber columns
+# to string ensures the join works even if the column is numeric in the
+# uploaded file.  If "All Crafts" is selected, include all rows.
+if selected_craft == "All Crafts":
+    time_df_filtered = time_df
+else:
+    # Identify AddressBookNumbers associated with the selected craft
+    try:
+        craft_ids = addr_df[addr_df["Craft Description"] == selected_craft]["AddressBookNumber"].astype(str)
+        time_df_filtered = time_df[time_df["AddressBookNumber"].astype(str).isin(craft_ids)].copy()
+    except Exception:
+        # Fallback: if something goes wrong, use the full dataset
+        time_df_filtered = time_df
+
 # Prepare the report data based on the selected date or month.  When
 # by_month_flag is True, prepare_report_data will aggregate all rows for
 # the month of selected_date.
 report = prepare_report_data(
-    time_df,
+    time_df_filtered,
     addr_df,
     craft_df,
     selected_date,
@@ -1256,3 +1272,4 @@ st.sidebar.download_button(
     file_name=f"workorder_snapshot_{display_label.replace('/', '-')}" + ".pdf",
     mime="application/pdf",
 )
+
